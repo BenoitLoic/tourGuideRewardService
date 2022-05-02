@@ -20,23 +20,23 @@ class RewardserviceApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test
-	void test(){
-
-
-
-//		List<User> userList = userClient.getAllUsers();
-//		System.out.println(userList.size());
-//		userList.forEach(i-> System.out.println(i.userName()));
-
-//		Map<UUID, Location> locations = locationClient.getAllLastLocation();
+//	@Test
+//	void test(){
 //
-//		locations.keySet().forEach(System.out::println);
-
-
-		Collection<Attraction> attractions = locationClient.getAllAttractions();
-		attractions.forEach(System.out::println);
-
-	}
+//
+//
+////		List<User> userList = userClient.getAllUsers();
+////		System.out.println(userList.size());
+////		userList.forEach(i-> System.out.println(i.userName()));
+//
+////		Map<UUID, Location> locations = locationClient.getAllLastLocation();
+////
+////		locations.keySet().forEach(System.out::println);
+//
+////
+////		Collection<Attraction> attractions = locationClient.getAllAttractions();
+////		attractions.forEach(System.out::println);
+////
+////	}
 
 }

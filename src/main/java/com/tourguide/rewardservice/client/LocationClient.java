@@ -1,6 +1,7 @@
 package com.tourguide.rewardservice.client;
 
 import com.tourguide.rewardservice.model.Attraction;
+import com.tourguide.rewardservice.model.AttractionWithDistanceDto;
 import com.tourguide.rewardservice.model.Location;
 import com.tourguide.rewardservice.model.VisitedLocation;
 
@@ -35,5 +36,5 @@ public interface LocationClient {
     Collection<Attraction> getAllAttractions();
 
     @RequestMapping(method = RequestMethod.GET,value = "/attraction/getClosest")
-    Map<Attraction,Double> getClosestAttraction(@NotNull Double latitude, @NotNull Double longitude);
+    AttractionWithDistanceDto getClosestAttraction( @RequestParam Double latitude, @RequestParam Double longitude);
 }

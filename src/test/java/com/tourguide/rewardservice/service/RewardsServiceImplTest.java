@@ -5,10 +5,7 @@ import com.tourguide.rewardservice.client.UserClient;
 import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.IllegalArgumentException;
 import com.tourguide.rewardservice.exception.ResourceNotFoundException;
-import com.tourguide.rewardservice.model.Attraction;
-import com.tourguide.rewardservice.model.Location;
-import com.tourguide.rewardservice.model.UserReward;
-import com.tourguide.rewardservice.model.VisitedLocation;
+import com.tourguide.rewardservice.model.*;
 import com.tourguide.rewardservice.repository.RewardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,8 +121,13 @@ class RewardsServiceImplTest {
                 attractionId2,
                 new Location(50, 20));
         double distanceOk= 5.0;
-        Map<Attraction,Double>map = new HashMap<>();
-        map.put(attraction2,distanceOk);
+AttractionWithDistanceDto clientResponse = new AttractionWithDistanceDto(attraction2.attractionName(),
+        attraction2.city(),
+        attraction2.state(),
+        attraction2.location().latitude,
+        attraction2.location().longitude,
+        distanceOk);
+clientResponse.setAttractionId(attractionId2);
         Date dateTest = new Date();
         VisitedLocation visitedLocation =
                 new VisitedLocation(userId, new Location(50, 20), dateTest);
@@ -134,7 +136,7 @@ class RewardsServiceImplTest {
         // WHEN
         doNothing().when(rewardRepositoryMock).addUserReward(any());
         when(rewardCentralMock.getAttractionRewardPoints(attractionId2,userId)).thenReturn(100);
-        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(map);
+        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(clientResponse);
 
         UserReward actual = rewardsService.addReward(userId,visitedLocation);
         // THEN
@@ -158,8 +160,13 @@ class RewardsServiceImplTest {
                 attractionId2,
                 new Location(50, 20));
         double distanceOk= 5.0;
-        Map<Attraction,Double>map = new HashMap<>();
-        map.put(attraction2,distanceOk);
+        AttractionWithDistanceDto clientResponse = new AttractionWithDistanceDto(attraction2.attractionName(),
+                attraction2.city(),
+                attraction2.state(),
+                attraction2.location().latitude,
+                attraction2.location().longitude,
+                distanceOk);
+        clientResponse.setAttractionId(attractionId2);
         Date dateTest = new Date();
         VisitedLocation visitedLocation =
                 new VisitedLocation(userId, new Location(50, 20), dateTest);
@@ -168,7 +175,7 @@ class RewardsServiceImplTest {
         allUserRewards.add(new UserReward(userId,visitedLocation,attraction1));
         allUserRewards.add(new UserReward(userId,visitedLocation,attraction2));
         // WHEN
-        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(map);
+        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(clientResponse);
         when(rewardRepositoryMock.getAllUserRewards(userId)).thenReturn(allUserRewards);
         // THEN
         assertThrows(DataAlreadyExistException.class,()->rewardsService.addReward(userId,visitedLocation));
@@ -180,10 +187,21 @@ class RewardsServiceImplTest {
         Date dateTest = new Date();
         VisitedLocation visitedLocation =
                 new VisitedLocation(userId, new Location(50, 20), dateTest);
-
+        Attraction attraction2 = new Attraction("attractionNameTest2",
+                "cityTest",
+                "stateTest",
+                attractionId2,
+                new Location(50, 20));
+        double distanceOk= 5.0;
+        AttractionWithDistanceDto clientResponse = new AttractionWithDistanceDto(attraction2.attractionName(),
+                attraction2.city(),
+                attraction2.state(),
+                attraction2.location().latitude,
+                attraction2.location().longitude,
+                distanceOk);
 
         // WHEN
-        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(new HashMap<>());
+        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(new AttractionWithDistanceDto());
 
         // THEN
         assertThrows(ResourceNotFoundException.class,()->rewardsService.addReward(userId,visitedLocation));
@@ -198,15 +216,20 @@ class RewardsServiceImplTest {
                 new Location(50, 120));
 
         double distanceKo= 20.0;
-        Map<Attraction,Double>map = new HashMap<>();
-        map.put(attraction1,distanceKo);
+        AttractionWithDistanceDto clientResponse = new AttractionWithDistanceDto(attraction1.attractionName(),
+                attraction1.city(),
+                attraction1.state(),
+                attraction1.location().latitude,
+                attraction1.location().longitude,
+                distanceKo);
+        clientResponse.setAttractionId(attractionId1);
         Date dateTest = new Date();
         VisitedLocation visitedLocation =
                 new VisitedLocation(userId, new Location(50, 20), dateTest);
 
 
         // WHEN
-        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(map);
+        when(locationClientMock.getClosestAttraction(anyDouble(),anyDouble())).thenReturn(clientResponse);
         // THEN
         assertThrows(IllegalArgumentException.class,()->rewardsService.addReward(userId,visitedLocation));
     }

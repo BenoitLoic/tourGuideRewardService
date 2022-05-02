@@ -1,5 +1,6 @@
 package com.tourguide.rewardservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tourguide.rewardservice.client.LocationClient;
 import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.IllegalArgumentException;
@@ -104,43 +105,41 @@ public class RewardsServiceImpl implements RewardsService {
     @Override
     public UserReward addReward(UUID userId, VisitedLocation visitedLocation) {
 
-        Map<Attraction, Double> nearbyAttractions = locationClient
+        AttractionWithDistanceDto nearbyAttractions = locationClient
                 .getClosestAttraction(visitedLocation.location().getLatitude(),
                         visitedLocation.location().getLongitude());
 
-        Optional<Attraction> key = nearbyAttractions.keySet().stream().findFirst();
 
-        if (key.isEmpty()) {
+        if (nearbyAttractions == null || nearbyAttractions.getAttractionId() == null) {
             logger.warn("Error, can't get nearby attractions from LocationClient.");
             throw new ResourceNotFoundException("Error, can't get nearby attractions.");
         }
 
-        double distance = nearbyAttractions.get(key.get());
-        Attraction attraction = key.get();
 
-        if (!nearAttraction(distance)) {
+        if (!nearAttraction(nearbyAttractions.getDistance())) {
             logger.warn(new StringBuilder()
                     .append("Error, distance : ")
-                    .append(distance)
+                    .append(nearbyAttractions.getDistance())
                     .append(" is superior to proximity buffer : ")
                     .append(proximityBuffer).toString());
             throw new IllegalArgumentException("Error, attraction is not close enough to add a new reward. distance : "
-                    + distance);
+                    + nearbyAttractions.getDistance());
         }
 
         Collection<UserReward> userRewards = getUserRewards(userId);
 
         for (UserReward reward : userRewards) {
-            if (reward.getAttraction().attractionId().equals(attraction.attractionId())) {
+            if (reward.getAttraction().attractionId().equals(nearbyAttractions.getAttractionId())) {
                 logger.warn(new StringBuilder()
                         .append("Error, user : ")
                         .append(userId)
                         .append(" already have a reward for attraction : ")
-                        .append(attraction.attractionId()).toString());
+                        .append(nearbyAttractions.getAttractionId()).toString());
                 throw new DataAlreadyExistException("Error, there is already a reward for this attractionId.");
             }
         }
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        Attraction attraction = new Attraction(nearbyAttractions.getAttractionName(), nearbyAttractions.getCity(), nearbyAttractions.getState(), nearbyAttractions.getAttractionId(), new Location(nearbyAttractions.getLongitude(), nearbyAttractions.getLatitude()));
         UserReward newReward = new UserReward(userId, visitedLocation, attraction);
         newReward.setRewardPoints(getRewardPoints(attraction.attractionId(), userId));
         rewardRepository.addUserReward(newReward);
