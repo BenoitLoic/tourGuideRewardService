@@ -1,8 +1,5 @@
 package com.tourguide.rewardservice.model;
 
-import gpsUtil.location.Attraction;
-
-
 import java.util.Objects;
 import java.util.UUID;
 

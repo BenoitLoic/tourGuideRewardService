@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -31,5 +32,8 @@ public interface LocationClient {
             @RequestParam Double longitude);
 
     @RequestMapping(method = RequestMethod.GET,value = "/attraction/getAll")
-    Collection<com.tourguide.rewardservice.model.Attraction> getAllAttractions();
+    Collection<Attraction> getAllAttractions();
+
+    @RequestMapping(method = RequestMethod.GET,value = "/attraction/getClosest")
+    Map<Attraction,Double> getClosestAttraction(@NotNull Double latitude, @NotNull Double longitude);
 }
