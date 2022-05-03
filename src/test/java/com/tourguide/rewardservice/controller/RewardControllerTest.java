@@ -106,19 +106,19 @@ class RewardControllerTest {
     }
 
     @Test
-    void getUserRewards_WhenUserDoesntExist_ShouldThrowResourceNotFoundException() throws Exception {
+    void getUserRewards_WhenUserDoesntExist_ShouldReturnEmptyList() throws Exception {
 
         // GIVEN
 
         // WHEN
-        doThrow(ResourceNotFoundException.class).when(rewardsServiceMock).getUserRewards(any());
+        when(rewardsServiceMock.getUserRewards(any())).thenReturn(new ArrayList<>());
         // THEN
         mockMvc
                 .perform(get(getUserRewardsUrl)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException));
+                .andExpect(status().isOk())
+                .andExpect(result -> assertEquals("[]", result.getResponse().getContentAsString()));
 
     }
 

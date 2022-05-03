@@ -3,15 +3,15 @@ package com.tourguide.rewardservice.model;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Model for UserReward entity.
- */
+/** Model for UserReward entity. */
 public class UserReward {
 
-  private final UUID userId;
-  private final VisitedLocation visitedLocation;
-  private final Attraction attraction;
+  private UUID userId;
+  private VisitedLocation visitedLocation;
+  private Attraction attraction;
   private int rewardPoints;
+
+  public UserReward() {}
 
   /**
    * Constructor with all final fields.

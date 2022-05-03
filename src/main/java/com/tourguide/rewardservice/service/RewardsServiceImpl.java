@@ -121,12 +121,18 @@ public class RewardsServiceImpl implements RewardsService {
     Collection<UserReward> userRewards = getUserRewards(userId);
 
     for (UserReward reward : userRewards) {
-      if (reward.getAttraction().attractionId().equals(nearbyAttractions.getAttractionId())) {
+      if (reward.getAttraction().attractionId().equals(nearbyAttractions.getAttractionId())
+          || reward
+              .getAttraction()
+              .attractionName()
+              .equals(nearbyAttractions.getAttractionName())) {
         logger.warn(
             new StringBuilder()
                 .append("Error, user : ")
                 .append(userId)
                 .append(" already have a reward for attraction : ")
+                .append(nearbyAttractions.getAttractionName())
+                .append(" with id: ")
                 .append(nearbyAttractions.getAttractionId())
                 .toString());
         throw new DataAlreadyExistException(

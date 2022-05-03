@@ -25,11 +25,6 @@ public class RewardController {
 
   @Autowired private RewardsService rewardsService;
 
-  @GetMapping("/")
-  public String index() {
-    return "Welcome to reward microservice !";
-  }
-
   @GetMapping("/get")
   public Collection<UserReward> getUserRewards(@RequestParam UUID userId) {
 
