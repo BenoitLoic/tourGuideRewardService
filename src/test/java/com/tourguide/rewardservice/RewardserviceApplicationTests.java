@@ -12,9 +12,9 @@ import java.util.Collection;
 @SpringBootTest
 class RewardserviceApplicationTests {
 
-	@Autowired UserClient userClient;
-	@Autowired
-	LocationClient locationClient;
+//	@Autowired UserClient userClient;
+//	@Autowired
+//	LocationClient locationClient;
 
 	@Test
 	void contextLoads() {

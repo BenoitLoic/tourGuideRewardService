@@ -2,6 +2,9 @@ package com.tourguide.rewardservice.model;
 
 import java.util.Objects;
 
+/**
+ * Location model.
+ */
 public class Location {
 
   public double longitude;

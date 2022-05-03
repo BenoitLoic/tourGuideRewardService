@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Feign client interface for LocationService Api.
+ * Contains method to request data from LocationService REST Api.
+ */
 @FeignClient(value = "locationService", url = "http://localhost:8110/")
 public interface LocationClient {
 

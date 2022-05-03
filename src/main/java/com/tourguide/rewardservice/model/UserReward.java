@@ -3,6 +3,9 @@ package com.tourguide.rewardservice.model;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Model for UserReward entity.
+ */
 public class UserReward {
 
   private final UUID userId;
@@ -10,6 +13,13 @@ public class UserReward {
   private final Attraction attraction;
   private int rewardPoints;
 
+  /**
+   * Constructor with all final fields.
+   *
+   * @param userId the user id
+   * @param visitedLocation the visitedLocation
+   * @param attraction the attraction
+   */
   public UserReward(UUID userId, VisitedLocation visitedLocation, Attraction attraction) {
     this.userId = userId;
     this.visitedLocation = visitedLocation;

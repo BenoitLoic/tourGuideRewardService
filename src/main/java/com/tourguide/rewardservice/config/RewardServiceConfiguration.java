@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/** Configuration class for Reward Service. */
 @Configuration
 public class RewardServiceConfiguration {
 

@@ -3,9 +3,9 @@ package com.tourguide.rewardservice.controller;
 import com.tourguide.rewardservice.model.UserReward;
 import com.tourguide.rewardservice.model.VisitedLocation;
 import com.tourguide.rewardservice.service.RewardsService;
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.UUID;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Rest controller for Reward service Api.
+ */
 @RestController
 @RequestMapping("/rewards")
 public class RewardController {

@@ -1,6 +1,5 @@
 package com.tourguide.rewardservice.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tourguide.rewardservice.client.LocationClient;
 import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.IllegalArgumentException;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/** Implementation for RewardService. Contain methods used by RewardService Rest controller. */
 @Service
 public class RewardsServiceImpl implements RewardsService {
 
@@ -33,6 +33,13 @@ public class RewardsServiceImpl implements RewardsService {
   private final LocationClient locationClient;
   private final Logger logger = LoggerFactory.getLogger(RewardsServiceImpl.class);
 
+  /**
+   * Constructor for injection.
+   *
+   * @param rewardsCentral RewardCentral bean
+   * @param rewardRepository the repository
+   * @param locationClient feign client for location api
+   */
   @Autowired
   public RewardsServiceImpl(
       RewardCentral rewardsCentral,
@@ -56,7 +63,14 @@ public class RewardsServiceImpl implements RewardsService {
     this.attractionProximityRange = attractionProximityRange;
   }
 
-  public int calculateRewards(UUID userId, UUID attractionId) {
+  /**
+   * This method get the reward points won by the user by visiting the attraction.
+   *
+   * @param attractionId the attraction id
+   * @param userId the user id
+   * @return number of points (integer) won by the user
+   */
+  public int calculateRewards(UUID attractionId, UUID userId) {
 
     if (userId == null || attractionId == null) {
       logger.warn(
@@ -71,35 +85,6 @@ public class RewardsServiceImpl implements RewardsService {
     }
     return rewardsCentral.getAttractionRewardPoints(attractionId, userId);
   }
-  //        Collection<com.tourguide.rewardservice.model.VisitedLocation> userLocations =
-  // locationClient.getAllVisitedLocation(userId);
-  //        Collection<Attraction> attractions = locationClient.getAllAttractions();
-  //
-  //        System.out.println(userLocations.size());
-  //        int count = 0;
-  //
-  //
-  //        for (VisitedLocation visitedLocation : userLocations) {
-  //            for (Attraction attraction : attractions) {
-  //                if (user.getUserRewards().stream().filter(
-  //                        r -> {
-  //                            return
-  // r.attraction.attractionName.equals(attraction.attractionName);
-  //                        }).count() == 0) {
-  //                    if (nearAttraction(visitedLocation, attraction)) {
-  //                        UserReward newReward = new UserReward(userId, visitedLocation,
-  // attraction);
-  //                        newReward.setRewardPoints(getRewardPoints(attraction, userId));
-  //                        user.addUserReward(
-  //                        );
-  //
-  //                        count++;
-  //                        System.out.println("count: " + count);
-  //                        System.out.println("list size: " + userLocations.size());
-  //                    }
-  //                }
-  //            }
-  //        }
 
   /**
    * Add a new UserReward for the given User based on his id.

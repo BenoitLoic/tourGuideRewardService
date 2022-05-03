@@ -5,6 +5,10 @@ import com.tourguide.rewardservice.model.VisitedLocation;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Interface for RewardService.
+ * Contain methods used by Reward Rest Controller.
+ */
 public interface RewardsService {
 
   /**

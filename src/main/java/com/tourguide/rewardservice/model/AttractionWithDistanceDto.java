@@ -3,6 +3,9 @@ package com.tourguide.rewardservice.model;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Dto for Attraction with additional distance field.
+ */
 public class AttractionWithDistanceDto {
 
   private String attractionName;
@@ -15,15 +18,16 @@ public class AttractionWithDistanceDto {
 
   public AttractionWithDistanceDto() {}
 
-  public AttractionWithDistanceDto(
-      String attractionName, String city, String state, double latitude, double longitude) {
-    this.attractionName = attractionName;
-    this.city = city;
-    this.state = state;
-    this.latitude = latitude;
-    this.longitude = longitude;
-  }
-
+  /**
+   * Constructor used by feign client.
+   *
+   * @param attractionName the attraction name
+   * @param city the city
+   * @param state the state
+   * @param latitude the latitude
+   * @param longitude the longitude
+   * @param distance the distance
+   */
   public AttractionWithDistanceDto(
       String attractionName,
       String city,
