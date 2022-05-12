@@ -154,6 +154,12 @@ public class RewardsServiceImpl implements RewardsService {
     return newReward;
   }
 
+  @Override
+  public Integer getRewardPoint(UUID attractionId, UUID userId) {
+
+    return rewardsCentral.getAttractionRewardPoints(attractionId, userId);
+  }
+
   /**
    * This method check if the attraction is within the proximity range of the location.
    *

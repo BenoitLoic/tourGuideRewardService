@@ -27,4 +27,12 @@ public interface RewardsService {
    * @return the UserReward
    */
   UserReward addReward(UUID userId, VisitedLocation visitedLocation);
+
+  /**
+   * Get the reward point for the given attraction/user combination.
+   * @param attractionId the attraction id
+   * @param userId the user id
+   * @return the reward point
+   */
+  Integer getRewardPoint(UUID attractionId, UUID userId);
 }
