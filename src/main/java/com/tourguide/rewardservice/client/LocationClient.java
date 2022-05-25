@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Feign client interface for LocationService Api.
- * Contains method to request data from LocationService REST Api.
+ * Feign client interface for LocationService Api. Contains method to request data from
+ * LocationService REST Api.
  */
-@FeignClient(value = "locationService", url = "http://localhost:8110")
+@FeignClient(value = "${location-service.name}", url = "${location-service.url}")
 public interface LocationClient {
 
   @RequestMapping(method = RequestMethod.GET, value = "/getStats")

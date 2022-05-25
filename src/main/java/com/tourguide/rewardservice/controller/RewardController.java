@@ -36,7 +36,7 @@ public class RewardController {
   @ResponseStatus(HttpStatus.CREATED)
   public UserReward addUserReward(
       @RequestParam UUID userId, @Valid @RequestBody VisitedLocation visitedLocation) {
-    return rewardsService.addReward(userId, visitedLocation);
+    return rewardsService.addReward(userId, visitedLocation).join();
   }
 
   // ADD userReward
@@ -44,6 +44,6 @@ public class RewardController {
   // Get possible reward
   @GetMapping( "/getPoint")
   Integer getReward(@RequestParam UUID attractionId,@RequestParam UUID userId){
-    return rewardsService.getRewardPoint(attractionId,userId);
+    return rewardsService.getRewardPoints(attractionId,userId).join();
   }
 }

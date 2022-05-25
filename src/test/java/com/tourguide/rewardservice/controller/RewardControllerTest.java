@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,7 +140,7 @@ class RewardControllerTest {
 
         String jsonResponse = objectMapper.writeValueAsString(userReward1);
         // WHEN
-        when(rewardsServiceMock.addReward(any(), any())).thenReturn(userReward1);
+        when(rewardsServiceMock.addReward(any(), any())).thenReturn(CompletableFuture.completedFuture(userReward1));
         // THEN
         mockMvc.perform(post(addRewardUrl)
                         .param("userId", userId.toString())

@@ -1,7 +1,6 @@
 package com.tourguide.rewardservice.service;
 
 import com.tourguide.rewardservice.client.LocationClient;
-import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.IllegalArgumentException;
 import com.tourguide.rewardservice.exception.ResourceNotFoundException;
 import com.tourguide.rewardservice.model.Attraction;
@@ -13,6 +12,10 @@ import com.tourguide.rewardservice.repository.RewardRepository;
 import rewardCentral.RewardCentral;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +26,20 @@ import org.springframework.stereotype.Service;
 public class RewardsServiceImpl implements RewardsService {
 
   // proximity in miles
-  private final int defaultProximityBuffer = 10;
+  private final int defaultProximityBuffer = 15;
   private int proximityBuffer = defaultProximityBuffer;
-  private final int attractionDefaultProximityRange = 200;
+  private final int attractionDefaultProximityRange = 20;
   private int attractionProximityRange = attractionDefaultProximityRange;
 
   private final RewardCentral rewardsCentral;
   private final RewardRepository rewardRepository;
   private final LocationClient locationClient;
   private final Logger logger = LoggerFactory.getLogger(RewardsServiceImpl.class);
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
   /**
    * Constructor for injection.
-   *
+   *Cop
    * @param rewardsCentral RewardCentral bean
    * @param rewardRepository the repository
    * @param locationClient feign client for location api
@@ -94,71 +98,73 @@ public class RewardsServiceImpl implements RewardsService {
    * @return the UserReward
    */
   @Override
-  public UserReward addReward(UUID userId, VisitedLocation visitedLocation) {
+  public CompletableFuture<UserReward> addReward(UUID userId, VisitedLocation visitedLocation) {
 
-    AttractionWithDistanceDto nearbyAttractions =
+    AttractionWithDistanceDto nearbyAttraction =
         locationClient.getClosestAttraction(
             visitedLocation.location().getLatitude(), visitedLocation.location().getLongitude());
 
-    if (nearbyAttractions == null || nearbyAttractions.getAttractionId() == null) {
+    if (nearbyAttraction == null || nearbyAttraction.getAttractionId() == null) {
       logger.warn("Error, can't get nearby attractions from LocationClient.");
       throw new ResourceNotFoundException("Error, can't get nearby attractions.");
     }
-
-    if (!nearAttraction(nearbyAttractions.getDistance())) {
+    System.out.println(nearbyAttraction.getDistance());
+    if (!nearAttraction(nearbyAttraction.getDistance())) {
       logger.warn(
           new StringBuilder()
               .append("Error, distance : ")
-              .append(nearbyAttractions.getDistance())
+              .append(nearbyAttraction.getDistance())
               .append(" is superior to proximity buffer : ")
               .append(proximityBuffer)
               .toString());
       throw new IllegalArgumentException(
           "Error, attraction is not close enough to add a new reward. distance : "
-              + nearbyAttractions.getDistance());
+              + nearbyAttraction.getDistance());
     }
 
-    Collection<UserReward> userRewards = getUserRewards(userId);
-
-    for (UserReward reward : userRewards) {
-      if (reward.getAttraction().attractionId().equals(nearbyAttractions.getAttractionId())
-          || reward
-              .getAttraction()
-              .attractionName()
-              .equals(nearbyAttractions.getAttractionName())) {
-        logger.warn(
-            new StringBuilder()
-                .append("Error, user : ")
-                .append(userId)
-                .append(" already have a reward for attraction : ")
-                .append(nearbyAttractions.getAttractionName())
-                .append(" with id: ")
-                .append(nearbyAttractions.getAttractionId())
-                .toString());
-        throw new DataAlreadyExistException(
-            "Error, there is already a reward for this attractionId.");
-      }
-    }
+    //    Collection<UserReward> userRewards = getUserRewards(userId);
+    //
+    //    for (UserReward reward : userRewards) {
+    //      if (reward.getAttraction().attractionId().equals(nearbyAttractions.getAttractionId())
+    //          || reward
+    //              .getAttraction()
+    //              .attractionName()
+    //              .equals(nearbyAttractions.getAttractionName())) {
+    //        logger.warn(
+    //            new StringBuilder()
+    //                .append("Error, user : ")
+    //                .append(userId)
+    //                .append(" already have a reward for attraction : ")
+    //                .append(nearbyAttractions.getAttractionName())
+    //                .append(" with id: ")
+    //                .append(nearbyAttractions.getAttractionId())
+    //                .toString());
+    //        throw new DataAlreadyExistException(
+    //            "Error, there is already a reward for this attractionId.");
+    //      }
+    //    }
 
     Attraction attraction =
         new Attraction(
-            nearbyAttractions.getAttractionName(),
-            nearbyAttractions.getCity(),
-            nearbyAttractions.getState(),
-            nearbyAttractions.getAttractionId(),
-            new Location(nearbyAttractions.getLongitude(), nearbyAttractions.getLatitude()));
+            nearbyAttraction.getAttractionName(),
+            nearbyAttraction.getCity(),
+            nearbyAttraction.getState(),
+            nearbyAttraction.getAttractionId(),
+            new Location(
+                nearbyAttraction.getLocation().longitude,
+                nearbyAttraction.getLocation().latitude));
     UserReward newReward = new UserReward(userId, visitedLocation, attraction);
-    newReward.setRewardPoints(getRewardPoints(attraction.attractionId(), userId));
-    rewardRepository.addUserReward(newReward);
 
-    return newReward;
+        rewardRepository.addUserReward(newReward);
+
+    return getRewardPoints(attraction.attractionId(), userId)
+        .thenApply(
+            p -> {
+              newReward.setRewardPoints(p);
+              return newReward;
+            });
   }
 
-  @Override
-  public Integer getRewardPoint(UUID attractionId, UUID userId) {
-
-    return rewardsCentral.getAttractionRewardPoints(attractionId, userId);
-  }
 
   /**
    * This method check if the attraction is within the proximity range of the location.
@@ -188,8 +194,10 @@ public class RewardsServiceImpl implements RewardsService {
    * @param userId the user id
    * @return number of points (integer) won by the user
    */
-  private int getRewardPoints(UUID attractionId, UUID userId) {
-    return rewardsCentral.getAttractionRewardPoints(attractionId, userId);
+  @Override
+  public CompletableFuture<Integer> getRewardPoints(UUID attractionId, UUID userId) {
+    return CompletableFuture.supplyAsync(
+        () -> rewardsCentral.getAttractionRewardPoints(attractionId, userId), threadPool);
   }
 
   /**

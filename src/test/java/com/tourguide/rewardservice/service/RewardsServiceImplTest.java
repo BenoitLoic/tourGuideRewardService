@@ -11,12 +11,15 @@ import com.tourguide.rewardservice.model.Location;
 import com.tourguide.rewardservice.model.UserReward;
 import com.tourguide.rewardservice.model.VisitedLocation;
 import com.tourguide.rewardservice.repository.RewardRepository;
+import org.junit.jupiter.api.Disabled;
 import rewardCentral.RewardCentral;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +103,7 @@ class RewardsServiceImplTest {
   }
 
   @Test
-  void addReward() {
+  void addReward() throws ExecutionException, InterruptedException {
     // -> ajoute une récompense
     // récupère les attractions les plus proches.
     // vérifie la proximité de l'utilisateur avec l'attraction la plus proche de sa position.
@@ -124,9 +127,9 @@ class RewardsServiceImplTest {
         new AttractionWithDistanceDto(
             attraction2.attractionName(),
             attraction2.city(),
-            attraction2.state(),
-            attraction2.location().latitude,
+            attraction2.state(),new Location(
             attraction2.location().longitude,
+            attraction2.location().latitude),
             distanceOk);
     clientResponse.setAttractionId(attractionId2);
     Date dateTest = new Date();
@@ -139,11 +142,12 @@ class RewardsServiceImplTest {
     when(locationClientMock.getClosestAttraction(anyDouble(), anyDouble()))
         .thenReturn(clientResponse);
 
-    UserReward actual = rewardsService.addReward(userId, visitedLocation);
+    UserReward actual = rewardsService.addReward(userId, visitedLocation).get();
     // THEN
     verify(rewardRepositoryMock, times(1)).addUserReward(expectedUserReward);
   }
 
+  @Disabled
   @Test
   void addReward_ShouldThrowDataAlreadyExistException() {
     // GIVEN
@@ -159,9 +163,9 @@ class RewardsServiceImplTest {
         new AttractionWithDistanceDto(
             attraction2.attractionName(),
             attraction2.city(),
-            attraction2.state(),
-            attraction2.location().latitude,
+            attraction2.state(),new Location(
             attraction2.location().longitude,
+            attraction2.location().latitude),
             distanceOk);
     clientResponse.setAttractionId(attractionId2);
     Date dateTest = new Date();
@@ -193,9 +197,9 @@ class RewardsServiceImplTest {
         new AttractionWithDistanceDto(
             attraction2.attractionName(),
             attraction2.city(),
-            attraction2.state(),
+            attraction2.state(),new Location(
             attraction2.location().latitude,
-            attraction2.location().longitude,
+            attraction2.location().longitude),
             distanceOk);
 
     // WHEN
@@ -219,9 +223,9 @@ class RewardsServiceImplTest {
         new AttractionWithDistanceDto(
             attraction1.attractionName(),
             attraction1.city(),
-            attraction1.state(),
-            attraction1.location().latitude,
+            attraction1.state(),new Location(
             attraction1.location().longitude,
+            attraction1.location().latitude),
             distanceKo);
     clientResponse.setAttractionId(attractionId1);
     Date dateTest = new Date();
@@ -237,16 +241,6 @@ class RewardsServiceImplTest {
 
   @Test
   void isWithinAttractionProximity_True() {
-    // -> vérifie que l'attraction est àa la bonne distance
-
-    // si trop loin -> false
-    // sinon true
-
-    // param(Double distance)
-    // return boolean
-
-    // proximityRange -> true
-    // proximityRange +1 -> false
 
     // GIVEN
     double isWithinProximityRange = 2d;
@@ -259,16 +253,6 @@ class RewardsServiceImplTest {
 
   @Test
   void isNotWithinAttractionProximity_ShouldReturnFalse() {
-    // -> vérifie que l'attraction est àa la bonne distance
-    // appel getDistance
-    // si trop loin -> false
-    // sinon true
-
-    // param(Double distance)
-    // return boolean
-
-    // proximityRange -> true
-    // proximityRange +1 -> false
 
     // GIVEN
     double isNotWithinProximityRange = 11;
@@ -281,16 +265,6 @@ class RewardsServiceImplTest {
 
   @Test
   void isWithinAttractionProximity_WithNegativeParam_ReturnTrue() {
-    // -> vérifie que l'attraction est àa la bonne distance
-    // appel getDistance
-    // si trop loin -> false
-    // sinon true
-
-    // param(Double distance)
-    // return boolean
-
-    // proximityRange -> true
-    // proximityRange +0.1 -> false
 
     // GIVEN
     double isWithinProximityRange = -10d;
@@ -303,11 +277,6 @@ class RewardsServiceImplTest {
 
   @Test
   void getUserRewards() {
-
-    // -> récupère les récompenses de l'tilisateur
-    // param (userId)
-    // return Collection<UserReward>userRewards
-    // renvoi une liste vide si pas de récompense.
 
     // GIVEN
 

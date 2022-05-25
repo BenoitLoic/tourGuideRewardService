@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Feign client interface for UserService Api.
  * Contains method to request data from LocationService REST Api.
  */
-@FeignClient(value = "userservice", url = "http://localhost:8100/")
+@FeignClient(value = "${user-service.name}", url = "${user-service.url}")
 public interface UserClient {
 
   @RequestMapping(method = RequestMethod.GET, value = "/getAllUsers")
