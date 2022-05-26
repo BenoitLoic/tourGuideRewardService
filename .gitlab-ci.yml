@@ -1,0 +1,15 @@
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  script:
+    - ./gradlew bootJar
+  image: openjdk:11-alpine
+
+test_job:
+  stage: test
+  script:
+    - ./gradlew test
+  image: openjdk:11-alpine

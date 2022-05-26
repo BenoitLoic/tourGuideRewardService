@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class RewardsServiceImpl implements RewardsService {
 
   // proximity in miles
-  private final int defaultProximityBuffer = 15;
+  private final int defaultProximityBuffer = Integer.MAX_VALUE;
   private int proximityBuffer = defaultProximityBuffer;
   private final int attractionDefaultProximityRange = 20;
   private int attractionProximityRange = attractionDefaultProximityRange;
