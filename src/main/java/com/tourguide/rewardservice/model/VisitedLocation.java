@@ -1,9 +1,8 @@
 package com.tourguide.rewardservice.model;
 
-
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
 
 /**
  * Record for VisitedLocation object.

@@ -2,15 +2,13 @@ package com.tourguide.rewardservice.model;
 
 import java.util.Objects;
 
-/**
- * Location model.
- */
+/** Location model. */
 public class Location {
 
-  public double longitude;
-  public double latitude;
+  private double longitude;
+  private double latitude;
 
-  public Location() {}
+  public Location(){}
 
   public Location(double longitude, double latitude) {
     this.longitude = longitude;
@@ -35,16 +33,10 @@ public class Location {
 
   @Override
   public boolean equals(Object o) {
-
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     Location location = (Location) o;
-    return Double.compare(location.longitude, longitude) == 0
-        && Double.compare(location.latitude, latitude) == 0;
+    return Double.compare(location.longitude, longitude) == 0 && Double.compare(location.latitude, latitude) == 0;
   }
 
   @Override
@@ -54,6 +46,9 @@ public class Location {
 
   @Override
   public String toString() {
-    return "Location{" + "longitude=" + longitude + ", latitude=" + latitude + '}';
+    return "Location{" +
+            "longitude=" + longitude +
+            ", latitude=" + latitude +
+            '}';
   }
 }

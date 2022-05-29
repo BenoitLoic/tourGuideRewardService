@@ -1,6 +1,5 @@
 package com.tourguide.rewardservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.ResourceNotFoundException;
@@ -9,17 +8,14 @@ import com.tourguide.rewardservice.model.Location;
 import com.tourguide.rewardservice.model.UserReward;
 import com.tourguide.rewardservice.model.VisitedLocation;
 import com.tourguide.rewardservice.service.RewardsService;
-import com.tourguide.rewardservice.service.RewardsServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
@@ -39,8 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = RewardController.class)
 class RewardControllerTest {
 
-    private final String getUserRewardsUrl = "/rewards/get";
-    private final String addRewardUrl = "/rewards/add";
+    private final static String GET_USER_REWARDS_URL = "/rewards/get";
+    private final static String ADD_REWARD_URL = "/rewards/add";
     private final UUID userId = UUID.randomUUID();
 
 
@@ -66,12 +62,6 @@ class RewardControllerTest {
                 new VisitedLocation(userId, new Location(56, 25), new Date()),
                 new Attraction("attractionNameTest1", "cityTest", "stateTest", attractionId1, new Location(50, 20)));
 
-        UUID attractionId2 = UUID.randomUUID();
-        UserReward userReward2 = new UserReward(
-                userId,
-                new VisitedLocation(userId, new Location(50, 28), new Date()),
-                new Attraction("attractionNameTest2", "cityTest", "stateTest", attractionId2, new Location(50, 20)));
-
         Collection<UserReward> rewards = new ArrayList<>();
         rewards.add(userReward1);
         rewards.add(userReward1);
@@ -79,7 +69,7 @@ class RewardControllerTest {
         when(rewardsServiceMock.getUserRewards(userId)).thenReturn(rewards);
         // THEN
         mockMvc
-                .perform(get(getUserRewardsUrl)
+                .perform(get(GET_USER_REWARDS_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -98,7 +88,7 @@ class RewardControllerTest {
 
         // THEN
         mockMvc
-                .perform(get(getUserRewardsUrl)
+                .perform(get(GET_USER_REWARDS_URL)
                         .param("userId", "")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -115,7 +105,7 @@ class RewardControllerTest {
         when(rewardsServiceMock.getUserRewards(any())).thenReturn(new ArrayList<>());
         // THEN
         mockMvc
-                .perform(get(getUserRewardsUrl)
+                .perform(get(GET_USER_REWARDS_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -142,7 +132,7 @@ class RewardControllerTest {
         // WHEN
         when(rewardsServiceMock.addReward(any(), any())).thenReturn(CompletableFuture.completedFuture(userReward1));
         // THEN
-        mockMvc.perform(post(addRewardUrl)
+        mockMvc.perform(post(ADD_REWARD_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonBody))
@@ -161,7 +151,7 @@ class RewardControllerTest {
         // WHEN
 
         // THEN
-        mockMvc.perform(post(addRewardUrl)
+        mockMvc.perform(post(ADD_REWARD_URL)
                         .param("userId", "")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonBody))
@@ -179,7 +169,7 @@ class RewardControllerTest {
         // WHEN
 
         // THEN
-        mockMvc.perform(post(addRewardUrl)
+        mockMvc.perform(post(ADD_REWARD_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJsonBody))
@@ -197,7 +187,7 @@ class RewardControllerTest {
         // WHEN
         doThrow(DataAlreadyExistException.class).when(rewardsServiceMock).addReward(userId, visitedLocationTest);
         // THEN
-        mockMvc.perform(post(addRewardUrl)
+        mockMvc.perform(post(ADD_REWARD_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(validJsonBody))
@@ -213,7 +203,7 @@ class RewardControllerTest {
         // WHEN
         doThrow(ResourceNotFoundException.class).when(rewardsServiceMock).addReward(userId, visitedLocationTest);
         // THEN
-        mockMvc.perform(post(addRewardUrl)
+        mockMvc.perform(post(ADD_REWARD_URL)
                         .param("userId", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(validJsonBody))

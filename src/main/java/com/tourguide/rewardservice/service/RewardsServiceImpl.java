@@ -9,17 +9,16 @@ import com.tourguide.rewardservice.model.Location;
 import com.tourguide.rewardservice.model.UserReward;
 import com.tourguide.rewardservice.model.VisitedLocation;
 import com.tourguide.rewardservice.repository.RewardRepository;
-import rewardCentral.RewardCentral;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rewardCentral.RewardCentral;
 
 /** Implementation for RewardService. Contain methods used by RewardService Rest controller. */
 @Service
@@ -30,7 +29,6 @@ public class RewardsServiceImpl implements RewardsService {
   private int proximityBuffer = defaultProximityBuffer;
   private final int attractionDefaultProximityRange = 20;
   private int attractionProximityRange = attractionDefaultProximityRange;
-
   private final RewardCentral rewardsCentral;
   private final RewardRepository rewardRepository;
   private final LocationClient locationClient;
@@ -44,12 +42,10 @@ public class RewardsServiceImpl implements RewardsService {
    * @param rewardRepository the repository
    * @param locationClient feign client for location api
    */
-  @Autowired
   public RewardsServiceImpl(
       RewardCentral rewardsCentral,
       RewardRepository rewardRepository,
       LocationClient locationClient) {
-
     this.rewardsCentral = rewardsCentral;
     this.rewardRepository = rewardRepository;
     this.locationClient = locationClient;
@@ -121,7 +117,8 @@ public class RewardsServiceImpl implements RewardsService {
             nearbyAttraction.getState(),
             nearbyAttraction.getAttractionId(),
             new Location(
-                nearbyAttraction.getLocation().longitude, nearbyAttraction.getLocation().latitude));
+                nearbyAttraction.getLocation().getLongitude(),
+                nearbyAttraction.getLocation().getLatitude()));
     UserReward newReward = new UserReward(userId, visitedLocation, attraction);
 
     rewardRepository.addUserReward(newReward);

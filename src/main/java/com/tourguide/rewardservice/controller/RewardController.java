@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Rest controller for Reward service Api.
- */
+/** Rest controller for Reward service Api. */
 @RestController
 @RequestMapping("/rewards")
 public class RewardController {
@@ -42,8 +40,8 @@ public class RewardController {
   // ADD userReward
 
   // Get possible reward
-  @GetMapping( "/getPoint")
-  Integer getReward(@RequestParam UUID attractionId,@RequestParam UUID userId){
-    return rewardsService.getRewardPoints(attractionId,userId).join();
+  @GetMapping("/getPoint")
+  Integer getReward(@RequestParam UUID attractionId, @RequestParam UUID userId) {
+    return rewardsService.getRewardPoints(attractionId, userId).join();
   }
 }

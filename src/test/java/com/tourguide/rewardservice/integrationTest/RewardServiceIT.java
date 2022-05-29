@@ -49,6 +49,9 @@ public class RewardServiceIT {
   @Test
   void getUserRewards() throws Exception {
 
+    // create rewards in repository
+    new PopulateRepository(rewardRepository,5);
+
     // When user have reward
     UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000003");
     mockMvc

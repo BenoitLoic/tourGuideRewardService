@@ -3,9 +3,7 @@ package com.tourguide.rewardservice.model;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Dto for Attraction with additional distance field.
- */
+/** Dto for Attraction with additional distance field. */
 public class AttractionWithDistanceDto {
 
   private String attractionName;
@@ -26,11 +24,11 @@ public class AttractionWithDistanceDto {
    * @param location the location
    */
   public AttractionWithDistanceDto(
-          String attractionName, String city, String state, Location location) {
+      String attractionName, String city, String state, Location location) {
     this.attractionName = attractionName;
     this.city = city;
     this.state = state;
-    this.location=location;
+    this.location = new Location(location.getLongitude(), location.getLatitude());
   }
 
   /**
@@ -43,14 +41,11 @@ public class AttractionWithDistanceDto {
    * @param distance the distance
    */
   public AttractionWithDistanceDto(
-          String attractionName,
-          String city,
-          String state,Location location,
-          double distance) {
+      String attractionName, String city, String state, Location location, double distance) {
     this.attractionName = attractionName;
     this.city = city;
     this.state = state;
-    this.location=location;
+    this.location = new Location(location.getLongitude(), location.getLatitude()) ;
     this.distance = distance;
   }
 
@@ -78,8 +73,6 @@ public class AttractionWithDistanceDto {
     this.state = state;
   }
 
-
-
   public UUID getAttractionId() {
     return attractionId;
   }
@@ -96,9 +89,8 @@ public class AttractionWithDistanceDto {
     this.distance = distance;
   }
 
-
   public Location getLocation() {
-    return location;
+    return new Location(location.getLongitude(), location.getLatitude());
   }
 
   public void setLocation(Location location) {
@@ -107,10 +99,19 @@ public class AttractionWithDistanceDto {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     AttractionWithDistanceDto that = (AttractionWithDistanceDto) o;
-    return Double.compare(that.distance, distance) == 0 && Objects.equals(attractionName, that.attractionName) && Objects.equals(city, that.city) && Objects.equals(state, that.state) && Objects.equals(location, that.location) && Objects.equals(attractionId, that.attractionId);
+    return Double.compare(that.distance, distance) == 0
+        && Objects.equals(attractionName, that.attractionName)
+        && Objects.equals(city, that.city)
+        && Objects.equals(state, that.state)
+        && Objects.equals(location, that.location)
+        && Objects.equals(attractionId, that.attractionId);
   }
 
   @Override
@@ -120,13 +121,22 @@ public class AttractionWithDistanceDto {
 
   @Override
   public String toString() {
-    return "AttractionWithDistanceDto{" +
-            "attractionName='" + attractionName + '\'' +
-            ", city='" + city + '\'' +
-            ", state='" + state + '\'' +
-            ", location=" + location +
-            ", distance=" + distance +
-            ", attractionId=" + attractionId +
-            '}';
+    return "AttractionWithDistanceDto{"
+        + "attractionName='"
+        + attractionName
+        + '\''
+        + ", city='"
+        + city
+        + '\''
+        + ", state='"
+        + state
+        + '\''
+        + ", location="
+        + location
+        + ", distance="
+        + distance
+        + ", attractionId="
+        + attractionId
+        + '}';
   }
 }

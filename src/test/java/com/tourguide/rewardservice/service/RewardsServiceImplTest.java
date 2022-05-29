@@ -114,9 +114,6 @@ class RewardsServiceImplTest {
     // return UserReward
 
     // GIVEN
-    Attraction attraction1 =
-        new Attraction(
-            "attractionNameTest1", "cityTest", "stateTest", attractionId1, new Location(50, 120));
 
     Attraction attraction2 =
         new Attraction(
@@ -127,8 +124,8 @@ class RewardsServiceImplTest {
             attraction2.attractionName(),
             attraction2.city(),
             attraction2.state(),new Location(
-            attraction2.location().longitude,
-            attraction2.location().latitude),
+            attraction2.location().getLongitude(),
+            attraction2.location().getLatitude()),
             distanceOk);
     clientResponse.setAttractionId(attractionId2);
     Date dateTest = new Date();
@@ -141,7 +138,7 @@ class RewardsServiceImplTest {
     when(locationClientMock.getClosestAttraction(anyDouble(), anyDouble()))
         .thenReturn(clientResponse);
 
-    UserReward actual = rewardsService.addReward(userId, visitedLocation).get();
+ rewardsService.addReward(userId, visitedLocation).get();
     // THEN
     verify(rewardRepositoryMock, times(1)).addUserReward(expectedUserReward);
   }
@@ -152,18 +149,6 @@ class RewardsServiceImplTest {
 
     Date dateTest = new Date();
     VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(50, 20), dateTest);
-    Attraction attraction2 =
-        new Attraction(
-            "attractionNameTest2", "cityTest", "stateTest", attractionId2, new Location(50, 20));
-    double distanceOk = 5.0;
-    AttractionWithDistanceDto clientResponse =
-        new AttractionWithDistanceDto(
-            attraction2.attractionName(),
-            attraction2.city(),
-            attraction2.state(),new Location(
-            attraction2.location().latitude,
-            attraction2.location().longitude),
-            distanceOk);
 
     // WHEN
     when(locationClientMock.getClosestAttraction(anyDouble(), anyDouble()))
