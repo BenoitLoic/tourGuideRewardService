@@ -11,6 +11,8 @@ import com.tourguide.rewardservice.repository.RewardRepository;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
+
+import com.tourguide.rewardservice.service.RewardsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +41,8 @@ public class RewardServiceIT {
 
   @Autowired MockMvc mockMvc;
   @Autowired RewardRepository rewardRepository;
+  @Autowired
+  RewardsServiceImpl rewardsService;
   @Autowired ObjectMapper objectMapper;
   @MockBean LocationClient locationClientMock;
 
@@ -117,18 +121,7 @@ public class RewardServiceIT {
                             .getAttraction()
                             .attractionName())
                     .isEqualTo("Legend Valley"));
-    // when valid but reward already exist
-//    mockMvc
-//        .perform(
-//            post(addUserRewardUrl)
-//                .param("userId", userId.toString())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(jsonBody))
-//        .andExpect(status().isConflict())
-//        .andExpect(
-//            result ->
-//                assertTrue(result.getResolvedException() instanceof DataAlreadyExistException));
-    // when parameter not valid
+
     String invalidBody = jsonBody.replace("00000000-0000-0000-0000-000000000003", "");
     mockMvc
         .perform(
@@ -141,10 +134,12 @@ public class RewardServiceIT {
             result ->
                 assertTrue(
                     result.getResolvedException() instanceof MethodArgumentNotValidException));
+
     // when attraction is too far
     VisitedLocation visitedLocationTooFar =
             new VisitedLocation(userId, new Location(-20.80667, 39.937778), date);
     String jsonBodyAttractionTooFar = objectMapper.writeValueAsString(visitedLocationTooFar);
+    rewardsService.setProximityBuffer(1);
     mockMvc
         .perform(
             post(ADDUSERREWARDURL)

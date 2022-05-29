@@ -1,7 +1,6 @@
 package com.tourguide.rewardservice.service;
 
 import com.tourguide.rewardservice.client.LocationClient;
-import com.tourguide.rewardservice.client.UserClient;
 import com.tourguide.rewardservice.exception.DataAlreadyExistException;
 import com.tourguide.rewardservice.exception.IllegalArgumentException;
 import com.tourguide.rewardservice.exception.ResourceNotFoundException;
@@ -44,7 +43,7 @@ class RewardsServiceImplTest {
 
   @Mock RewardsServiceImpl rewardsServiceMock;
   @Mock LocationClient locationClientMock;
-  @Mock UserClient userClientMock;
+
   @Mock RewardCentral rewardCentralMock;
   @Mock RewardRepository rewardRepositoryMock;
 
@@ -147,42 +146,6 @@ class RewardsServiceImplTest {
     verify(rewardRepositoryMock, times(1)).addUserReward(expectedUserReward);
   }
 
-  @Disabled
-  @Test
-  void addReward_ShouldThrowDataAlreadyExistException() {
-    // GIVEN
-    Attraction attraction1 =
-        new Attraction(
-            "attractionNameTest1", "cityTest", "stateTest", attractionId1, new Location(50, 120));
-
-    Attraction attraction2 =
-        new Attraction(
-            "attractionNameTest2", "cityTest", "stateTest", attractionId2, new Location(50, 20));
-    double distanceOk = 5.0;
-    AttractionWithDistanceDto clientResponse =
-        new AttractionWithDistanceDto(
-            attraction2.attractionName(),
-            attraction2.city(),
-            attraction2.state(),new Location(
-            attraction2.location().longitude,
-            attraction2.location().latitude),
-            distanceOk);
-    clientResponse.setAttractionId(attractionId2);
-    Date dateTest = new Date();
-    VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(50, 20), dateTest);
-
-    Collection<UserReward> allUserRewards = new ArrayList<>();
-    allUserRewards.add(new UserReward(userId, visitedLocation, attraction1));
-    allUserRewards.add(new UserReward(userId, visitedLocation, attraction2));
-    // WHEN
-    when(locationClientMock.getClosestAttraction(anyDouble(), anyDouble()))
-        .thenReturn(clientResponse);
-    when(rewardRepositoryMock.getAllUserRewards(userId)).thenReturn(allUserRewards);
-    // THEN
-    assertThrows(
-        DataAlreadyExistException.class, () -> rewardsService.addReward(userId, visitedLocation));
-  }
-
   @Test
   void addReward_ShouldThrowResourceNotFoundException() {
     // GIVEN
@@ -209,34 +172,6 @@ class RewardsServiceImplTest {
     // THEN
     assertThrows(
         ResourceNotFoundException.class, () -> rewardsService.addReward(userId, visitedLocation));
-  }
-
-  @Test
-  void addReward_ShouldThrowIllegalArgumentException() {
-    // GIVEN
-    Attraction attraction1 =
-        new Attraction(
-            "attractionNameTest1", "cityTest", "stateTest", attractionId1, new Location(50, 120));
-
-    double distanceKo = 20.0;
-    AttractionWithDistanceDto clientResponse =
-        new AttractionWithDistanceDto(
-            attraction1.attractionName(),
-            attraction1.city(),
-            attraction1.state(),new Location(
-            attraction1.location().longitude,
-            attraction1.location().latitude),
-            distanceKo);
-    clientResponse.setAttractionId(attractionId1);
-    Date dateTest = new Date();
-    VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(50, 20), dateTest);
-
-    // WHEN
-    when(locationClientMock.getClosestAttraction(anyDouble(), anyDouble()))
-        .thenReturn(clientResponse);
-    // THEN
-    assertThrows(
-        IllegalArgumentException.class, () -> rewardsService.addReward(userId, visitedLocation));
   }
 
   @Test
